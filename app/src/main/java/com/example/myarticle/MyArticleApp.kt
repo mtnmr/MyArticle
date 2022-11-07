@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import com.example.myarticle.model.Article
 import com.example.myarticle.model.sampleData
 import com.example.myarticle.ui.theme.MyArticleTheme
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun MyArticleApp(){
@@ -62,7 +64,7 @@ fun ArticleListItem(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = article.date,
+                    text = SimpleDateFormat("MM/dd", Locale.JAPAN).format(article.date) ?: "",
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
