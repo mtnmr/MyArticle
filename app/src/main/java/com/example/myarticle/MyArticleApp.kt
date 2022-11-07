@@ -3,16 +3,18 @@ package com.example.myarticle
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myarticle.model.Article
 import com.example.myarticle.model.sampleData
 import com.example.myarticle.ui.theme.MyArticleTheme
@@ -20,17 +22,38 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun MyArticleApp(){
-    ArticleList(articleList = sampleData)
+fun MyArticleApp(
+    viewModel: ArticleViewModel = viewModel()
+){
+    val articleList by viewModel.allArticles.collectAsState()
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    val article = Article(title = "sample", link = "https://sample.link", date = Date())
+                    viewModel.insertArticle(article)
+                }
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "add article button")
+            }
+        }
+    ){ innerPadding ->
+        ArticleList(
+            articleList = articleList,
+            modifier = Modifier.padding(innerPadding)
+        )
+    }
 }
 
 @Composable
 fun ArticleList(
-    articleList:List<Article>
+    articleList:List<Article>,
+    modifier: Modifier = Modifier
 ){
     LazyColumn(
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ){
         items(articleList){ article ->
             ArticleListItem(article = article)
@@ -95,7 +118,7 @@ fun ArticleListPreview(){
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            ArticleList(sampleData)
+            ArticleList(articleList = sampleData)
         }
     }
 }
