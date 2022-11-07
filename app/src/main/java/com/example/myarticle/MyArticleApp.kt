@@ -64,7 +64,8 @@ fun ArticleListItem(
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = SimpleDateFormat("MM/dd", Locale.JAPAN).format(article.date) ?: "",
+                    text = article.date?.let { SimpleDateFormat("MM/dd", Locale.JAPAN).format(it) }
+                        ?: "",
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
