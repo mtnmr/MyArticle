@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">MyArticle</string>
+
+    <string name="save_dialog_title">記事を保存</string>
+    <string name="save_article_title">タイトル</string>
+    <string name="save_article_link">リンク</string>
+    <string name="save_article">保存</string>
+    <string name="save_article_cancel">キャンセル</string>
 </resources>
