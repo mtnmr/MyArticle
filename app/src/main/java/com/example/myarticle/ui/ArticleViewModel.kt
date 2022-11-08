@@ -27,4 +27,10 @@ class ArticleViewModel @Inject constructor(private val repository: ArticleReposi
             repository.insertArticle(article)
         }
     }
+
+    fun deleteArticle(article: Article){
+        viewModelScope.launch {
+            repository.deleteArticle(article)
+        }
+    }
 }

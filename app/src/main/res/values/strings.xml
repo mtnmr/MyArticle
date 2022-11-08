@@ -6,4 +6,8 @@
     <string name="save_article_link">リンク</string>
     <string name="save_article">保存</string>
     <string name="save_article_cancel">キャンセル</string>
+    <string name="delete_article">削除</string>
+    <string name="edit_article">編集</string>
+
+    <string name="sample_url">https://developer.android.com/jetpack/compose/text?hl=ja</string>
 </resources>

@@ -1,6 +1,6 @@
 package com.example.myarticle.ui
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +27,7 @@ import java.util.*
 @Composable
 fun MyArticleApp(
     viewModel: ArticleViewModel = viewModel(),
-    onClickItem: (String) -> Unit
+    onClickItem: (String) -> Unit,
 ){
     val articleList by viewModel.allArticles.collectAsState()
     var openDialog by remember { mutableStateOf(false) }
@@ -43,7 +44,9 @@ fun MyArticleApp(
         ArticleList(
             articleList = articleList,
             onClickItem = onClickItem,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            onClickDelete = {article -> viewModel.deleteArticle(article) },
+            onClickEdit = { TODO() }
         )
 
         if(openDialog){
@@ -62,6 +65,8 @@ fun MyArticleApp(
 fun ArticleList(
     articleList:List<Article>,
     onClickItem: (String) -> Unit,
+    onClickDelete:(Article) -> Unit,
+    onClickEdit:(Article) -> Unit,
     modifier: Modifier = Modifier
 ){
     LazyColumn(
@@ -72,7 +77,12 @@ fun ArticleList(
             articleList,
             key =  {item: Article ->  item.id}
         ){ article ->
-            ArticleListItem(article = article, onClickItem = onClickItem)
+            ArticleListItem(
+                article = article,
+                onClickItem = onClickItem,
+                onClickDelete = onClickDelete,
+                onClickEdit = onClickEdit
+            )
         }
     }
 }
@@ -80,11 +90,20 @@ fun ArticleList(
 @Composable
 fun ArticleListItem(
     article: Article,
-    onClickItem:(String) -> Unit
+    onClickItem:(String) -> Unit,
+    onClickDelete:(Article) -> Unit,
+    onClickEdit:(Article) -> Unit
 ){
+    var showMenu by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
-            .clickable { onClickItem(article.link) }
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onLongPress = { showMenu = true },
+                    onTap = { onClickItem(article.link) }
+                )
+            }
             .fillMaxWidth(),
         elevation = 4.dp,
     ) {
@@ -111,6 +130,23 @@ fun ArticleListItem(
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
+        }
+    }
+
+    DropdownMenu(
+        expanded = showMenu,
+        onDismissRequest = { showMenu = false }
+    ) {
+        DropdownMenuItem(
+            onClick = { onClickDelete(article) }
+        ) {
+           Text(text = stringResource(id = R.string.delete_article))
+        }
+
+        DropdownMenuItem(
+            onClick = { onClickEdit(article)}
+        ) {
+            Text(text = stringResource(id = R.string.edit_article))
         }
     }
 }
@@ -212,7 +248,7 @@ fun ArticleListItemPreview(){
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colors.background
         ) {
-            ArticleListItem(article = sampleData[0], onClickItem = {})
+            ArticleListItem(article = sampleData[0], onClickItem = {}, onClickDelete = {}, onClickEdit = {})
         }
     }
 }
@@ -225,7 +261,7 @@ fun ArticleListPreview(){
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            ArticleList(articleList = sampleData, onClickItem = {})
+            ArticleList(articleList = sampleData, onClickItem = {}, onClickDelete = {}, onClickEdit = {})
         }
     }
 }
