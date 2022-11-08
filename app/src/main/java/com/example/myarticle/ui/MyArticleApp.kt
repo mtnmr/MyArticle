@@ -7,6 +7,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,11 +32,25 @@ fun MyArticleApp(
     viewModel: ArticleViewModel = viewModel(),
     onClickItem: (String) -> Unit,
 ){
-    val articleList by viewModel.allArticles.collectAsState()
+    val articleList by viewModel.articleList.collectAsState()
     var openDialog by remember { mutableStateOf(false) }
     var currentArticle by remember { mutableStateOf(Article(id = -1)) }
+    var isSearching by remember { mutableStateOf(false) }
+    val searchText by viewModel.searchText.collectAsState()
 
     Scaffold(
+        topBar = {
+             if(isSearching){
+                 SearchArticleBar(
+                     searchText = searchText,
+                     onSearchTextChange = { text -> viewModel.changeSearchText(text)}
+                 ) { isSearching = false }
+             }else{
+                 ArticleAppBar(
+                     onClickSearch = { isSearching = true}
+                 )
+             }
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -246,6 +263,71 @@ fun SaveDialog(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ArticleAppBar(
+    onClickSearch:() -> Unit
+){
+    TopAppBar(
+        title = { Text(stringResource(id = R.string.article_list_title)) },
+        actions = {
+            IconButton(
+                onClick = onClickSearch
+            ) {
+                Icon(Icons.Default.Search, contentDescription = "search articles")
+            }
+        }
+    )
+}
+
+@Preview
+@Composable
+fun ArticleAppBarPreview(){
+    Surface {
+         ArticleAppBar(onClickSearch = {})
+    }
+}
+
+@Composable
+fun SearchArticleBar(
+    searchText: String,
+    onSearchTextChange:(String) -> Unit,
+    onClickBack:() -> Unit,
+){
+    TopAppBar() {
+        TextField(
+            value = searchText,
+            onValueChange = { onSearchTextChange(it) },
+            label = {
+                Text(
+                    text = stringResource(id = R.string.search_article),
+                    color = MaterialTheme.colors.onPrimary
+                )},
+            leadingIcon = {
+                IconButton(onClick = onClickBack) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                }
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = { onSearchTextChange("") }
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "search text clear")
+                }
+            },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SearchArticleBarPreview(){
+    Surface {
+        SearchArticleBar(searchText = "", {}, {})
     }
 }
 

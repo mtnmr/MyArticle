@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.Flow
 interface ArticleRepository {
     fun getAllArticles():Flow<List<Article>>
 
+    fun searchArticles(text:String): Flow<List<Article>>
+
     suspend fun insertArticle(article:Article)
 
     suspend fun updateArticle(article:Article)

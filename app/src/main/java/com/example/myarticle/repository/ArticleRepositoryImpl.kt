@@ -12,6 +12,10 @@ class ArticleRepositoryImpl @Inject constructor(
         return articleDao.getAllArticle()
     }
 
+    override fun searchArticles(text: String): Flow<List<Article>> {
+        return articleDao.searchArticles(text)
+    }
+
     override suspend fun insertArticle(article:Article) {
         articleDao.insertArticle(article)
     }

@@ -5,9 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.myarticle.model.Article
 import com.example.myarticle.repository.ArticleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -16,6 +14,11 @@ import javax.inject.Inject
 class ArticleViewModel @Inject constructor(private val repository: ArticleRepository): ViewModel() {
 
     val allArticles:StateFlow<List<Article>> = repository.getAllArticles().stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
+
+    private val _searchText = MutableStateFlow("")
+    val searchText:StateFlow<String> = _searchText.asStateFlow()
+
+    val articleList:StateFlow<List<Article>> = searchText.flatMapLatest{ repository.searchArticles(it) }.stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     fun addArticle(title:String, link:String, id:Int){
         if(id == -1){
@@ -44,5 +47,9 @@ class ArticleViewModel @Inject constructor(private val repository: ArticleReposi
         viewModelScope.launch {
             repository.updateArticle(article)
         }
+    }
+
+    fun changeSearchText(text:String){
+        _searchText.value = text
     }
 }

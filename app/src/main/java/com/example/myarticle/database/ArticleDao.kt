@@ -14,6 +14,9 @@ interface ArticleDao {
     @Query("SELECT * FROM article")
     fun getAllArticle():Flow<List<Article>>
 
+    @Query("SELECT * FROM article WHERE title LIKE '%' || :text || '%'")
+    fun searchArticles(text:String):Flow<List<Article>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertArticle(article: Article)
 
