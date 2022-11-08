@@ -45,7 +45,10 @@ fun MyArticleApp(
 
         if(openDialog){
             SaveDialog(
-                onSaveButtonClicked = { openDialog = false },
+                onSaveButtonClicked = { title, link ->
+                    viewModel.addArticle(title, link)
+                    openDialog = false
+                },
                 onCancelButtonClicked = { openDialog = false }
             )
         }
@@ -141,7 +144,7 @@ fun SaveAlertDialog(
 
 @Composable
 fun SaveDialog(
-    onSaveButtonClicked:() -> Unit,
+    onSaveButtonClicked:(String, String) -> Unit,
     onCancelButtonClicked:() -> Unit
 ){
     var title by remember { mutableStateOf("") }
@@ -160,6 +163,7 @@ fun SaveDialog(
                     value = title,
                     onValueChange = { title = it },
                     label = { Text(text = stringResource(id = R.string.save_article_title))},
+                    singleLine = true,
                     modifier = Modifier.padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
                 )
 
@@ -167,6 +171,7 @@ fun SaveDialog(
                     value = link,
                     onValueChange = { link = it },
                     label = { Text(text = stringResource(id = R.string.save_article_link))},
+                    singleLine = true,
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 )
 
@@ -181,7 +186,7 @@ fun SaveDialog(
                     }
 
                     TextButton(
-                        onClick = onSaveButtonClicked,
+                        onClick = { onSaveButtonClicked(title, link) },
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Text(text = stringResource(id = R.string.save_article))
@@ -220,22 +225,6 @@ fun ArticleListPreview(){
 
 @Preview
 @Composable
-fun SaveAlertDialogPreview(){
-    MyArticleTheme() {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colors.background
-        ) {
-            SaveAlertDialog(
-                onSaveButtonClicked = {},
-                onCancelButtonClicked = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
 fun SaveDialogPreview(){
     MyArticleTheme() {
         Surface(
@@ -243,7 +232,7 @@ fun SaveDialogPreview(){
             color = MaterialTheme.colors.background
         ) {
             SaveDialog(
-                onSaveButtonClicked = {},
+                onSaveButtonClicked = {_,_ -> },
                 onCancelButtonClicked = {},
             )
         }

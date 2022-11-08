@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,7 +17,12 @@ class ArticleViewModel @Inject constructor(private val repository: ArticleReposi
 
     val allArticles:StateFlow<List<Article>> = repository.getAllArticles().stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
-    fun insertArticle(article: Article){
+    fun addArticle(title:String, link:String){
+        val article = Article(title = title, link = link, date = Date())
+        insertArticle(article = article)
+    }
+
+    private fun insertArticle(article: Article){
         viewModelScope.launch {
             repository.insertArticle(article)
         }
