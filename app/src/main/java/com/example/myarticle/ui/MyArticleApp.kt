@@ -1,5 +1,6 @@
 package com.example.myarticle.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,7 +25,8 @@ import java.util.*
 
 @Composable
 fun MyArticleApp(
-    viewModel: ArticleViewModel = viewModel()
+    viewModel: ArticleViewModel = viewModel(),
+    onClickItem: (String) -> Unit
 ){
     val articleList by viewModel.allArticles.collectAsState()
     var openDialog by remember { mutableStateOf(false) }
@@ -40,6 +42,7 @@ fun MyArticleApp(
     ){ innerPadding ->
         ArticleList(
             articleList = articleList,
+            onClickItem = onClickItem,
             modifier = Modifier.padding(innerPadding)
         )
 
@@ -58,6 +61,7 @@ fun MyArticleApp(
 @Composable
 fun ArticleList(
     articleList:List<Article>,
+    onClickItem: (String) -> Unit,
     modifier: Modifier = Modifier
 ){
     LazyColumn(
@@ -68,17 +72,20 @@ fun ArticleList(
             articleList,
             key =  {item: Article ->  item.id}
         ){ article ->
-            ArticleListItem(article = article)
+            ArticleListItem(article = article, onClickItem = onClickItem)
         }
     }
 }
 
 @Composable
 fun ArticleListItem(
-    article: Article
+    article: Article,
+    onClickItem:(String) -> Unit
 ){
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .clickable { onClickItem(article.link) }
+            .fillMaxWidth(),
         elevation = 4.dp,
     ) {
         Column(
@@ -205,7 +212,7 @@ fun ArticleListItemPreview(){
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colors.background
         ) {
-            ArticleListItem(article = sampleData[0])
+            ArticleListItem(article = sampleData[0], onClickItem = {})
         }
     }
 }
@@ -218,7 +225,7 @@ fun ArticleListPreview(){
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colors.background
         ) {
-            ArticleList(articleList = sampleData)
+            ArticleList(articleList = sampleData, onClickItem = {})
         }
     }
 }
