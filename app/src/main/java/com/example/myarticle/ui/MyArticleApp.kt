@@ -31,11 +31,15 @@ fun MyArticleApp(
 ){
     val articleList by viewModel.allArticles.collectAsState()
     var openDialog by remember { mutableStateOf(false) }
+    var currentArticle by remember { mutableStateOf(Article(id = -1)) }
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { openDialog = true }
+                onClick = {
+                    currentArticle = Article(id = -1)
+                    openDialog = true
+                }
             ) {
                 Icon(Icons.Default.Add, contentDescription = "add article button")
             }
@@ -46,13 +50,17 @@ fun MyArticleApp(
             onClickItem = onClickItem,
             modifier = Modifier.padding(innerPadding),
             onClickDelete = {article -> viewModel.deleteArticle(article) },
-            onClickEdit = { TODO() }
+            onClickEdit = { article ->
+                currentArticle = article
+                openDialog = true
+            }
         )
 
         if(openDialog){
             SaveDialog(
-                onSaveButtonClicked = { title, link ->
-                    viewModel.addArticle(title, link)
+                article = currentArticle,
+                onSaveButtonClicked = { title, link, id ->
+                    viewModel.addArticle(title, link, id)
                     openDialog = false
                 },
                 onCancelButtonClicked = { openDialog = false }
@@ -187,11 +195,12 @@ fun SaveAlertDialog(
 
 @Composable
 fun SaveDialog(
-    onSaveButtonClicked:(String, String) -> Unit,
+    article: Article,
+    onSaveButtonClicked:(String, String, Int) -> Unit,
     onCancelButtonClicked:() -> Unit
 ){
-    var title by remember { mutableStateOf("") }
-    var link by remember { mutableStateOf("") }
+    var title by remember { mutableStateOf(article.title) }
+    var link by remember { mutableStateOf(article.link) }
 
     Dialog(onDismissRequest = {  }) {
         Surface() {
@@ -229,7 +238,7 @@ fun SaveDialog(
                     }
 
                     TextButton(
-                        onClick = { onSaveButtonClicked(title, link) },
+                        onClick = { onSaveButtonClicked(title, link, article.id) },
                         modifier = Modifier.padding(start = 8.dp)
                     ) {
                         Text(text = stringResource(id = R.string.save_article))
@@ -275,7 +284,8 @@ fun SaveDialogPreview(){
             color = MaterialTheme.colors.background
         ) {
             SaveDialog(
-                onSaveButtonClicked = {_,_ -> },
+                article = Article(id = -1),
+                onSaveButtonClicked = {_,_,_ -> },
                 onCancelButtonClicked = {},
             )
         }

@@ -17,9 +17,15 @@ class ArticleViewModel @Inject constructor(private val repository: ArticleReposi
 
     val allArticles:StateFlow<List<Article>> = repository.getAllArticles().stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
-    fun addArticle(title:String, link:String){
-        val article = Article(title = title, link = link, date = Date())
-        insertArticle(article = article)
+    fun addArticle(title:String, link:String, id:Int){
+        if(id == -1){
+            val article = Article(title = title, link = link, date = Date())
+            insertArticle(article = article)
+        }else{
+            val article = Article(id = id, title = title, link = link, date = Date())
+            updateArticle(article = article)
+        }
+
     }
 
     private fun insertArticle(article: Article){
@@ -31,6 +37,12 @@ class ArticleViewModel @Inject constructor(private val repository: ArticleReposi
     fun deleteArticle(article: Article){
         viewModelScope.launch {
             repository.deleteArticle(article)
+        }
+    }
+
+    private fun updateArticle(article: Article){
+        viewModelScope.launch {
+            repository.updateArticle(article)
         }
     }
 }
