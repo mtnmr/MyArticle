@@ -1,25 +1,22 @@
 package com.example.myarticle
 
-
 import android.content.Intent
-import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.myarticle.ui.ArticleViewModel
-import com.example.myarticle.ui.MyArticleApp
 import com.example.myarticle.ui.theme.MyArticleTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class ShareActivity : AppCompatActivity() {
 
     private val viewModel: ArticleViewModel by viewModels()
 
@@ -39,29 +36,21 @@ class MainActivity : ComponentActivity() {
             viewModel.addArticle(title, url as String, -1)
         }
 
-        val callbackOnLinkClicked : (String) -> Unit = {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
-            try{
-                startActivity(intent)
-            }catch(e:Exception){
-                Toast.makeText(this, "アクセスできません", Toast.LENGTH_SHORT).show()
-                Log.d("onClickItem", "intent uri failure: $e")
-            }
-        }
-
         setContent {
             MyArticleTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    MyArticleApp(
-                        viewModel,
-                        onClickItem = callbackOnLinkClicked
-                    )
+                    ShareScreen()
                 }
             }
+
         }
     }
+}
+
+@Composable
+fun ShareScreen(){
+    Text(text = "Share finish")
 }
