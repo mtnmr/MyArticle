@@ -33,10 +33,15 @@ class MainActivity : ComponentActivity() {
             else -> ""
         }
 
-        val title = "share test"
+        val title = when(intent.action){
+            Intent.ACTION_SEND -> {
+                intent.getStringExtra(Intent.EXTRA_SUBJECT)
+            }
+            else -> ""
+        }
 
         if(url != "") {
-            viewModel.addArticle(title, url as String, -1)
+            viewModel.addArticle(title.toString(), url as String, -1)
         }
 
         val callbackOnLinkClicked : (String) -> Unit = {
